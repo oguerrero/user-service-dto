@@ -1,5 +1,6 @@
 package com.oguerrero.userservice.controller;
 
+import com.oguerrero.userservice.Utils.Utils;
 import com.oguerrero.userservice.dto.UserInfoDTO;
 import com.oguerrero.userservice.dto.UserRegisterDTO;
 import com.oguerrero.userservice.entity.User;
@@ -46,7 +47,20 @@ public class UserController {
             return ResponseEntity.badRequest().build();
         }
 
+        String firstName = Utils.format(user.getFirstName());
+        String lastName = Utils.format(user.getLastName());
         String encryptedPassword = passwordEncoder.encode(user.getPassword());
+
+        if (Utils.invalidEmail(user.getEmail())) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        if (Utils.invalidPhoneNumber(user.getPhoneNumber())) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
         user.setPassword(encryptedPassword);
 
         User saveUser = new UserRegisterMapper().toEntity(user);
